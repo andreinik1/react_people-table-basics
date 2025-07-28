@@ -1,36 +1,12 @@
 import React from 'react';
 import { usePeopleContext } from '../context/PeopleContext';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Loader } from './Loader';
-
-type PersonSlug = {
-  isSlug: boolean;
-  slugPerson?: string;
-};
+import { PersonLink } from './PersonLink';
 
 export const Peoples: React.FC = () => {
   const { peoples, isLoading, peopleLoadingError } = usePeopleContext();
-  const { slug } = useParams();
-  const currentPersonSlug = slug;
-
-  const findPerson = (personName: string): PersonSlug => {
-    if (!peoples || !personName) {
-      return { isSlug: false };
-    }
-
-    const foundPerson = peoples.find(
-      person => person.name === personName && !!person.slug,
-    );
-
-    if (foundPerson && foundPerson.slug) {
-      return {
-        isSlug: true,
-        slugPerson: foundPerson.slug,
-      };
-    }
-
-    return { isSlug: false };
-  };
+  const { slug: currentPersonSlug } = useParams();
 
   return (
     <main className="section">
@@ -54,10 +30,10 @@ export const Peoples: React.FC = () => {
                   <table
                     data-cy="peopleTable"
                     className="table
-                  is-striped
-                  is-hoverable
-                  is-narrow
-                  is-fullwidth"
+                      is-striped
+                      is-hoverable
+                      is-narrow
+                      is-fullwidth"
                   >
                     <thead>
                       <tr>
@@ -72,57 +48,35 @@ export const Peoples: React.FC = () => {
 
                     <tbody>
                       {peoples?.map(person => {
-                        let motherHaveSlug = false;
-                        let motherSlug: string | undefined;
-                        let fatherHaveSlug = false;
-                        let fatherSlug: string | undefined;
+                        const motherPerson = peoples.find(
+                          p => p.name === person.motherName && p.slug,
+                        );
 
-                        if (person.motherName !== null) {
-                          const { isSlug, slugPerson } = findPerson(
-                            person.motherName,
-                          );
-
-                          motherHaveSlug = isSlug;
-                          motherSlug = slugPerson;
-                        }
-
-                        if (person.fatherName !== null) {
-                          const { isSlug, slugPerson } = findPerson(
-                            person.fatherName,
-                          );
-
-                          fatherHaveSlug = isSlug;
-                          fatherSlug = slugPerson;
-                        }
+                        const fatherPerson = peoples.find(
+                          p => p.name === person.fatherName && p.slug,
+                        );
 
                         return (
                           <tr
                             key={person.name}
                             data-cy="person"
-                            className={`${currentPersonSlug === person.slug ? 'has-background-warning' : ''}`}
+                            className={
+                              currentPersonSlug === person.slug
+                                ? 'has-background-warning'
+                                : ''
+                            }
                           >
                             <td>
-                              <Link
-                                to={`/people/${person.slug}`}
-                                className={`${person.sex === 'f' ? 'has-text-danger' : ''}`}
-                              >
-                                {person.name}
-                              </Link>
+                              <PersonLink person={person} />
                             </td>
-
                             <td>{person.sex}</td>
                             <td>{person.born}</td>
                             <td>{person.died}</td>
                             <td>
                               {person.motherName === null ? (
                                 '-'
-                              ) : motherHaveSlug ? (
-                                <Link
-                                  to={`/people/${motherSlug}`}
-                                  className="has-text-danger"
-                                >
-                                  {person.motherName}
-                                </Link>
+                              ) : motherPerson ? (
+                                <PersonLink person={motherPerson} />
                               ) : (
                                 person.motherName
                               )}
@@ -130,10 +84,8 @@ export const Peoples: React.FC = () => {
                             <td>
                               {person.fatherName === null ? (
                                 '-'
-                              ) : fatherHaveSlug ? (
-                                <Link to={`/people/${fatherSlug}`}>
-                                  {person.fatherName}
-                                </Link>
+                              ) : fatherPerson ? (
+                                <PersonLink person={fatherPerson} />
                               ) : (
                                 person.fatherName
                               )}
