@@ -5,7 +5,7 @@ import { Loader } from './Loader';
 
 type PersonSlug = {
   isSlug: boolean;
-  slugg?: string;
+  slugPerson?: string;
 };
 
 export const Peoples: React.FC = () => {
@@ -25,7 +25,7 @@ export const Peoples: React.FC = () => {
     if (foundPerson && foundPerson.slug) {
       return {
         isSlug: true,
-        slugg: foundPerson.slug,
+        slugPerson: foundPerson.slug,
       };
     }
 
@@ -78,21 +78,21 @@ export const Peoples: React.FC = () => {
                         let fatherSlug: string | undefined;
 
                         if (person.motherName !== null) {
-                          const { isSlug, slugg } = findPerson(
+                          const { isSlug, slugPerson } = findPerson(
                             person.motherName,
                           );
 
                           motherHaveSlug = isSlug;
-                          motherSlug = slugg;
+                          motherSlug = slugPerson;
                         }
 
                         if (person.fatherName !== null) {
-                          const { isSlug, slugg } = findPerson(
+                          const { isSlug, slugPerson } = findPerson(
                             person.fatherName,
                           );
 
                           fatherHaveSlug = isSlug;
-                          fatherSlug = slugg;
+                          fatherSlug = slugPerson;
                         }
 
                         return (
